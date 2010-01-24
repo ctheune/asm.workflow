@@ -12,6 +12,7 @@ TestLayer = zope.app.testing.functional.ZCMLLayer(
     os.path.join(os.path.dirname(__file__), 'ftesting.zcml'),
     __name__, 'TestLayer', allow_teardown=False)
 
+
 class SeleniumTestCase(asm.cms.testing.SeleniumTestCase):
 
     layer = gocept.selenium.ztk.Layer(TestLayer)
@@ -22,4 +23,3 @@ class SeleniumTestCase(asm.cms.testing.SeleniumTestCase):
         s.click('css=#version h3')
         s.clickAndWait('css=#publish')
         s.assertTextPresent('Published draft')
-
