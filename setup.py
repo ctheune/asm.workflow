@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='asm.workflow',
-      version = '0.1',
+      version = '0.2dev',
       description="Workflow extension for the Assembly CMS",
       author="Webcrew",
       author_email="web@assembly.org",
