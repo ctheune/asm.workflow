@@ -2,7 +2,7 @@
 0.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Implement function for deleting a public version.
 
 
 0.1.1 (2010-04-12)

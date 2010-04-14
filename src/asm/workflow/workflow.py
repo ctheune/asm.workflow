@@ -135,6 +135,34 @@ class Publish(asm.cms.ActionView):
         self.flash(u"Published draft.")
 
 
+class DeletePublic(asm.cms.ActionView):
+
+    grok.context(asm.cms.IEdition)
+    grok.name('delete-public')
+
+    def update(self):
+        page = self.context.page
+        public = self.context.parameters.replace(
+            WORKFLOW_DRAFT, WORKFLOW_PUBLIC)
+        try:
+            public = page.getEdition(public)
+        except KeyError:
+            self.flash(u"No public version to delete.")
+            return
+
+        draft = self.context.parameters.replace(
+            WORKFLOW_PUBLIC, WORKFLOW_DRAFT)
+        try:
+            draft = page.getEdition(draft)
+        except KeyError:
+            self.flash(u"Can not delete public version without draft.")
+            return
+
+        del public.__parent__[public.__name__]
+        self.flash(u'Deleted public version.')
+        self.redirect(self.url(draft, '@@edit'))
+
+
 class Revert(asm.cms.ActionView):
     """Revert a draft's changes by copying the current state of the published
     edition.

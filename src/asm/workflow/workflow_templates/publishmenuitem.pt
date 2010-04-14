@@ -18,7 +18,8 @@
 
     <ul>
         <li tal:attributes="class python:'workflow:draft' in context.parameters and ' ' or 'expand'"><form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button"/></form></li>
-        <li class="expand"><input type="button" value="Delete public version" class="button"/></li>
+        <li class="expand"><form tal:attributes="action
+            python:view.url(context, '@@delete-public')" method="post"><input type="submit" value="Delete public version" class="button"/></form></li>
     </ul>
 </div>
 
