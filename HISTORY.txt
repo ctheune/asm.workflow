@@ -1,5 +1,5 @@
 
-0.1.3 (unreleased)
+0.1.3 (2010-04-19)
 ------------------
 
 - Refine usability of workflow: drafts are deleted now after publishing. Also
