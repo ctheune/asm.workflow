@@ -17,14 +17,19 @@
     </ul>
 
     <ul>
-        <li tal:attributes="class python:'workflow:draft' in context.parameters and ' ' or 'expand'"><form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button"/></form></li>
-        <li class="expand"><form tal:attributes="action
+        <li tal:condition="viewlet/is_draft">
+            <form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button"/></form></li>
+        <li tal:condition="python:viewlet.is_public() and viewlet.has_draft()"
+            class="expand"><form tal:attributes="action
             python:view.url(context, '@@delete-public')" method="post"><input type="submit" value="Delete public version" class="button"/></form></li>
+        <li tal:condition="python:viewlet.has_public()"
+            class="expand"><form tal:attributes="action
+            python:view.url(context, '@@create-draft')" method="post"><input
+            type="submit" value="Create draft" class="button"
+            tal:attributes="value python:viewlet.has_draft() and 'Revert draft' or 'Create draft'"/></form></li>
+        <li tal:condition="python:viewlet.is_draft() and viewlet.has_public()"
+            class="expand"><form tal:attributes="action
+            python:view.url(context, '@@delete-draft')" method="post"><input
+            type="submit" value="Delete draft" class="button"/></form></li>
     </ul>
 </div>
-
-
-<!-- 
-  - make "publish draft" only visible by default if we're looking at the draft
-
-  -->

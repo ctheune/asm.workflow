@@ -41,6 +41,8 @@ def publish(current_edition, publication_date=None):
     public.modified = (
         publication_date or datetime.datetime.now(tz=pytz.UTC))
     zope.event.notify(asm.workflow.interfaces.PublishedEvent(draft, public))
+    # And now remove the draft after publication.
+    del draft.__parent__[draft.__name__]
     return public
 
 
@@ -88,6 +90,30 @@ class PublishMenuItem(grok.Viewlet):
             if candidate.startswith('workflow:'):
                 return WORKFLOW_LABELS[candidate]
 
+    def is_draft(self):
+        return WORKFLOW_DRAFT in self.context.parameters
+
+    def is_public(self):
+        return WORKFLOW_PUBLIC in self.context.parameters
+
+    def has_draft(self):
+        try:
+            draft = self.context.parameters.replace(
+                'workflow:*', WORKFLOW_DRAFT)
+            self.context.page.getEdition(draft)
+        except KeyError:
+            return False
+        return True
+
+    def has_public(self):
+        try:
+            draft = self.context.parameters.replace(
+                'workflow:*', WORKFLOW_PUBLIC)
+            self.context.page.getEdition(draft)
+        except KeyError:
+            return False
+        return True
+
     def hints(self):
         hints = ''
         public_p = self.context.parameters.replace(
@@ -97,15 +123,16 @@ class PublishMenuItem(grok.Viewlet):
         except KeyError:
             hints += 'No public version available. '
         else:
-            draft = self.context.page.getEdition(
-                public_p.replace('workflow:*', WORKFLOW_DRAFT), create=True)
-
-            if draft is self.context:
-                hints += 'Public version available. '
-
-            if draft.modified > public.modified:
-                hints + 'Draft is newer.'
-
+            try:
+                draft = self.context.page.getEdition(
+                    public_p.replace('workflow:*', WORKFLOW_DRAFT))
+            except KeyError:
+                pass
+            else:
+                if draft is self.context:
+                    hints += 'Public version available. '
+                if draft.modified > public.modified:
+                    hints + 'Draft is newer.'
         return hints
 
     def list_versions(self):
@@ -163,9 +190,37 @@ class DeletePublic(asm.cms.ActionView):
         self.redirect(self.url(draft, '@@edit'))
 
 
-class Revert(asm.cms.ActionView):
-    """Revert a draft's changes by copying the current state of the published
-    edition.
+class DeleteDraft(asm.cms.ActionView):
+
+    grok.context(asm.cms.IEdition)
+    grok.name('delete-draft')
+
+    def update(self):
+        page = self.context.page
+        draft = self.context.parameters.replace(
+            WORKFLOW_PUBLIC, WORKFLOW_DRAFT)
+        try:
+            draft = page.getEdition(draft)
+        except KeyError:
+            self.flash(u"No draft version to delete.")
+            return
+
+        public = self.context.parameters.replace(
+            WORKFLOW_DRAFT, WORKFLOW_PUBLIC)
+        try:
+            public = page.getEdition(public)
+        except KeyError:
+            self.flash(u"Can not delete draft without public version.")
+            return
+
+        del draft.__parent__[draft.__name__]
+        self.flash(u'Deleted draft version.')
+        self.redirect(self.url(public, '@@edit'))
+
+
+class CreateDraft(asm.cms.ActionView):
+    """Create (or update) a draft by copying the current state of the published
+    edition to the draft object.
 
     This action view can be applied either on the draft or the public copy with
     the same result.
@@ -173,6 +228,7 @@ class Revert(asm.cms.ActionView):
     """
 
     grok.context(asm.cms.IEdition)
+    grok.name('create-draft')
 
     def update(self):
         page = self.context.page
@@ -181,10 +237,11 @@ class Revert(asm.cms.ActionView):
         try:
             public = page.getEdition(public)
         except KeyError:
-            self.flash(u"Can not revert because no public edition exists.")
+            self.flash(u"Cannot revert because no public edition exists.")
             return
 
         draft = public.parameters.replace(WORKFLOW_PUBLIC, WORKFLOW_DRAFT)
         draft = page.getEdition(draft, create=True)
         draft.copyFrom(public)
-        self.flash(u"Reverted draft changes.")
+        self.flash(u"Copied data from public version to draft.")
+        self.redirect(self.url(draft, '@@edit'))
