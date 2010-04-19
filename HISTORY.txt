@@ -1,5 +1,5 @@
 
-0.1.4 (unreleased)
+0.1.4 (2010-04-20)
 ------------------
 
 - Rebalance CMS edition selector to allow better interaction with other
