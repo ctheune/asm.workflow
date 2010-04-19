@@ -59,10 +59,20 @@ class CMSEditionSelector(object):
         self.preferred = []
         self.acceptable = []
         for edition in page.editions:
+            target = self.acceptable
             if WORKFLOW_DRAFT in edition.parameters:
-                self.preferred.append(edition)
-            else:
-                self.acceptable.append(edition)
+                target = self.preferred
+            elif WORKFLOW_PUBLIC in edition.parameters:
+                # If it's public and there is no draft, then the public
+                # version is preferred, otherwise if there is a draft, it's
+                # just acceptable. This allows promotion of a public version
+                # from another plugin.
+                try:
+                    draft = page.getEdition(edition.parameters.replace(
+                        'workflow:*', WORKFLOW_DRAFT))
+                except KeyError:
+                    target = self.preferred
+            target.append(edition)
 
 
 class RetailEditionSelector(object):
