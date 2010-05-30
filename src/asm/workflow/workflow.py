@@ -72,9 +72,8 @@ class RetailEditionSelector(object):
         asm.cms.IPage,
         asm.cms.interfaces.IRetailSkin)
 
-    acceptable = ()
-
     def __init__(self, page, request):
+        self.acceptable = []
         self.preferred = []
         for edition in page.editions:
             if WORKFLOW_PUBLIC in edition.parameters:
