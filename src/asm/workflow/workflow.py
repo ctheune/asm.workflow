@@ -2,6 +2,7 @@
 # See also LICENSE.txt
 
 import asm.cms.interfaces
+import asm.cms.cmsui
 import datetime
 import grok
 import pytz
@@ -244,3 +245,56 @@ class CreateDraft(asm.cms.ActionView):
         draft.copyFrom(public)
         self.flash(u"Copied data from public version to draft.")
         self.redirect(self.url(draft, '@@edit'))
+
+
+class InconsistentStateNotification(grok.Viewlet):
+
+    grok.viewletmanager(asm.cms.cmsui.NotificationMessages)
+    grok.context(asm.cms.IEdition)
+
+    message = u""
+    instruction = u""
+
+    def _select_public_draft_editions(self):
+        edition_parameters = self.context.parameters
+        page = self.context.page
+
+        draft = None
+        public = None
+        if WORKFLOW_PUBLIC in edition_parameters:
+            public = self.context
+            parameters = edition_parameters.replace(
+                WORKFLOW_PUBLIC, WORKFLOW_DRAFT)
+            try:
+                draft = page.getEdition(parameters)
+            except KeyError, e:
+                pass
+        elif WORKFLOW_DRAFT in edition_parameters:
+            draft = self.context
+            parameters = edition_parameters.replace(
+                WORKFLOW_DRAFT, WORKFLOW_PUBLIC)
+            try:
+                public = page.getEdition(parameters)
+            except KeyError, e:
+                pass
+
+        return public, draft
+
+
+    def update(self):
+        public, draft = self._select_public_draft_editions()
+
+        if public is None or draft is None:
+            return
+
+        if self.context == draft:
+            if public.modified > draft.modified:
+                self.message = u"Public version has been modified after a draft has been created."
+                self.instruction = u"Be careful not to lose any corrections that may have been made in public version."
+            elif draft.modified > public.modified:
+                self.message = u"Remember to publish this draft."
+                self.instruction = u"Changes to drafts are not visible until published."
+
+        if self.context == public and draft.modified > public.modified:
+            self.message = u"A draft exists and has been modified."
+            self.instruction = u"Remember to update the draft with the same corrections you are making into the public version."
