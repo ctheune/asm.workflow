@@ -2,7 +2,11 @@
 0.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Notify user about different states of publication when editing content.
+
+- Bug fix: Change tuple to list so that selector combining works correctly.
+
+- Adapt to new layout of expandable sections.
 
 
 0.1.4 (2010-04-20)
