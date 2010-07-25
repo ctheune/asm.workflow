@@ -5,7 +5,7 @@
     <span class="open ui-icon ui-icon-carat-1-n"></span>
     </h3>
 
-    <p class="hint closed" tal:condition="viewlet/hints" tal:content="viewlet/hints">Public version available. Draft is newer.</p>
+    <p class="hint closed" tal:condition="viewlet/hints" tal:content="viewlet/hints">Public version is available. Draft is newer.</p>
 
     <ul class="expand">
         <li tal:repeat="version viewlet/list_versions"
@@ -18,7 +18,7 @@
 
     <ul>
         <li tal:condition="viewlet/is_draft">
-            <form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button"/></form></li>
+            <form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button" title="Makes draft version public."/></form></li>
         <li tal:condition="python:viewlet.is_public() and viewlet.has_draft()"
             class="expand"><form tal:attributes="action
             python:view.url(context, '@@delete-public')" method="post"><input type="submit" value="Delete public version" class="button"/></form></li>
@@ -26,7 +26,7 @@
             class="expand"><form tal:attributes="action
             python:view.url(context, '@@create-draft')" method="post"><input
             type="submit" value="Create draft" class="button"
-            tal:attributes="value python:viewlet.has_draft() and 'Revert draft' or 'Create draft'"/></form></li>
+            tal:attributes="value python:viewlet.has_draft() and 'Revert draft' or 'Create draft'" title="Replaces draft version with currently published version."/></form></li>
         <li tal:condition="python:viewlet.is_draft() and viewlet.has_public()"
             class="expand"><form tal:attributes="action
             python:view.url(context, '@@delete-draft')" method="post"><input
