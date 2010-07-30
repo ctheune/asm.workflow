@@ -18,10 +18,10 @@
 
     <ul>
         <li tal:condition="viewlet/is_draft">
-            <form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button" title="Makes draft version public."/></form></li>
+            <form tal:attributes="action python:view.url(context, 'publish')" method="post"><input id="publish" type="submit" value="Publish draft" class="button" title="Replaces the public version with this draft and deletes draft."/></form></li>
         <li tal:condition="python:viewlet.is_public() and viewlet.has_draft()"
             class="expand"><form tal:attributes="action
-            python:view.url(context, '@@delete-public')" method="post"><input type="submit" value="Delete public version" class="button"/></form></li>
+            python:view.url(context, '@@delete-public')" method="post"><input type="submit" value="Delete public version" class="button" title="Deletes the public version."/></form></li>
         <li tal:condition="python:viewlet.has_public()"
             class="expand"><form tal:attributes="action
             python:view.url(context, '@@create-draft')" method="post"><input
@@ -30,6 +30,6 @@
         <li tal:condition="python:viewlet.is_draft() and viewlet.has_public()"
             class="expand"><form tal:attributes="action
             python:view.url(context, '@@delete-draft')" method="post"><input
-            type="submit" value="Delete draft" class="button"/></form></li>
+            type="submit" value="Delete draft" class="button" title="Deletes this draft." /></form></li>
     </ul>
 </div>
