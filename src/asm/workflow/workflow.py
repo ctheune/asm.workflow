@@ -2,7 +2,8 @@
 # See also LICENSE.txt
 
 import asm.cms.interfaces
-import asm.cms.cmsui
+import asm.cmsui.base
+import asm.cmsui.interfaces
 import datetime
 import grok
 import pytz
@@ -54,7 +55,7 @@ def select_initial_parameters():
 class CMSEditionSelector(object):
 
     zope.interface.implements(asm.cms.IEditionSelector)
-    zope.component.adapts(asm.cms.IPage, asm.cms.ICMSSkin)
+    zope.component.adapts(asm.cms.IPage, asm.cmsui.interfaces.ICMSSkin)
 
     def __init__(self, page, request):
         self.preferred = []
@@ -81,7 +82,7 @@ class RetailEditionSelector(object):
     zope.interface.implements(asm.cms.IEditionSelector)
     zope.component.adapts(
         asm.cms.IPage,
-        asm.cms.interfaces.IRetailSkin)
+        asm.cmsui.interfaces.IRetailSkin)
 
     def __init__(self, page, request):
         self.acceptable = []
@@ -92,7 +93,7 @@ class RetailEditionSelector(object):
 
 
 class PublishMenuItem(grok.Viewlet):
-    grok.viewletmanager(asm.cms.PageActionGroups)
+    grok.viewletmanager(asm.cmsui.base.PageActionGroups)
     grok.context(asm.cms.IEdition)
 
     def current_version(self):
@@ -162,7 +163,7 @@ class PublishMenuItem(grok.Viewlet):
             yield version
 
 
-class Publish(asm.cms.ActionView):
+class Publish(asm.cmsui.base.ActionView):
 
     grok.context(asm.cms.IEdition)
 
@@ -172,7 +173,7 @@ class Publish(asm.cms.ActionView):
         self.flash(u"Published draft.")
 
 
-class DeletePublic(asm.cms.ActionView):
+class DeletePublic(asm.cmsui.base.ActionView):
 
     grok.context(asm.cms.IEdition)
     grok.name('delete-public')
@@ -200,7 +201,7 @@ class DeletePublic(asm.cms.ActionView):
         self.redirect(self.url(draft, '@@edit'))
 
 
-class DeleteDraft(asm.cms.ActionView):
+class DeleteDraft(asm.cmsui.base.ActionView):
 
     grok.context(asm.cms.IEdition)
     grok.name('delete-draft')
@@ -228,7 +229,7 @@ class DeleteDraft(asm.cms.ActionView):
         self.redirect(self.url(public, '@@edit'))
 
 
-class CreateDraft(asm.cms.ActionView):
+class CreateDraft(asm.cmsui.base.ActionView):
     """Create (or update) a draft by copying the current state of the published
     edition to the draft object.
 
@@ -259,7 +260,7 @@ class CreateDraft(asm.cms.ActionView):
 
 class InconsistentStateNotification(grok.Viewlet):
 
-    grok.viewletmanager(asm.cms.cmsui.NotificationMessages)
+    grok.viewletmanager(asm.cmsui.base.NotificationMessages)
     grok.context(asm.cms.IEdition)
 
     message = u""
