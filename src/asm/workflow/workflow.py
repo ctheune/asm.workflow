@@ -300,8 +300,8 @@ class InconsistentStateNotification(grok.Viewlet):
 
         if self.context == draft:
             if public.modified > draft.modified:
-                self.message = u"Public version has been modified after a draft has been created."
-                self.instruction = u"Be careful not to lose any corrections that may have been made in public version."
+                self.message = u"Public version has been modified after a draft has been created. Press \"Revert draft\" button to edit latest published version as a draft."
+                self.instruction = u"Be careful not to lose any corrections that may have been made in the public version."
             elif draft.modified > public.modified:
                 self.message = u"Remember to publish this draft."
                 self.instruction = u"Changes to drafts are not visible until published."
