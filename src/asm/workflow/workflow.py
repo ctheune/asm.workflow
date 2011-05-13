@@ -55,15 +55,18 @@ def select_initial_parameters():
 class CMSEditionSelector(object):
 
     zope.interface.implements(asm.cms.IEditionSelector)
-    zope.component.adapts(asm.cms.IPage, asm.cmsui.interfaces.ICMSSkin)
+    zope.component.adapts(asm.cmsui.interfaces.ICMSSkin)
 
-    def __init__(self, page, request):
-        self.preferred = []
-        self.acceptable = []
+    def __init__(self, request):
+        pass
+
+    def select(self, page):
+        preferred = []
+        acceptable = []
         for edition in page.editions:
-            target = self.acceptable
+            target = acceptable
             if WORKFLOW_DRAFT in edition.parameters:
-                target = self.preferred
+                target = preferred
             elif WORKFLOW_PUBLIC in edition.parameters:
                 # If it's public and there is no draft, then the public
                 # version is preferred, otherwise if there is a draft, it's
@@ -73,8 +76,9 @@ class CMSEditionSelector(object):
                     draft = page.getEdition(edition.parameters.replace(
                         'workflow:*', WORKFLOW_DRAFT))
                 except KeyError:
-                    target = self.preferred
+                    target = preferred
             target.append(edition)
+        return preferred, acceptable
 
 
 class RetailEditionSelector(object):
@@ -84,12 +88,16 @@ class RetailEditionSelector(object):
         asm.cms.IPage,
         asm.cmsui.interfaces.IRetailSkin)
 
-    def __init__(self, page, request):
-        self.acceptable = []
-        self.preferred = []
+    def __init__(self, request):
+        pass
+
+    def select(self, page):
+        acceptable = []
+        preferred = []
         for edition in page.editions:
             if WORKFLOW_PUBLIC in edition.parameters:
-                self.preferred.append(edition)
+                preferred.append(edition)
+        return acceptable
 
 
 class PublishMenuItem(grok.Viewlet):
