@@ -2,7 +2,7 @@
 0.1.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Adapt to new selector API.
 
 
 0.1.6 (2010-08-21)
