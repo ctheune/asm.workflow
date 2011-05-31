@@ -2,7 +2,7 @@
 0.1.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix bug in registration of retail selector and its API.
 
 
 0.1.7 (2011-05-13)

@@ -84,9 +84,7 @@ class CMSEditionSelector(object):
 class RetailEditionSelector(object):
 
     zope.interface.implements(asm.cms.IEditionSelector)
-    zope.component.adapts(
-        asm.cms.IPage,
-        asm.cmsui.interfaces.IRetailSkin)
+    zope.component.adapts(asm.cmsui.interfaces.IRetailSkin)
 
     def __init__(self, request):
         pass
@@ -97,7 +95,7 @@ class RetailEditionSelector(object):
         for edition in page.editions:
             if WORKFLOW_PUBLIC in edition.parameters:
                 preferred.append(edition)
-        return acceptable
+        return preferred, acceptable
 
 
 class PublishMenuItem(grok.Viewlet):
