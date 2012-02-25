@@ -84,7 +84,7 @@ class CMSEditionSelector(object):
 class RetailEditionSelector(object):
 
     zope.interface.implements(asm.cms.IEditionSelector)
-    zope.component.adapts(asm.cmsui.interfaces.IRetailSkin)
+    zope.component.adapts(asm.cmsui.interfaces.IRetailBaseSkin)
 
     def __init__(self, request):
         pass
