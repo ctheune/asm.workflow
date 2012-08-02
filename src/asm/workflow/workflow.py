@@ -48,7 +48,9 @@ def publish(current_edition, publication_date=None):
     return public
 
 
-def select_initial_parameters():
+def select_initial_parameters(page):
+    if page.type == 'asset':
+        return set([WORKFLOW_PUBLIC])
     return set([WORKFLOW_DRAFT])
 
 
